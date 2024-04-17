@@ -1,0 +1,26 @@
+parameters:
+  - name: npmPublish
+    type: string
+  - name: filePath
+    type: string
+    default: '$(Build.SourcesDirectory)'
+  - name: defaultBranch
+    type: string
+    default: ''
+    
+steps:
+- ${{ if parameters.defaultBranch}}:
+  - task: Npm@1
+    inputs:
+      command: 'custom'
+      customCommand: '${{ parameters.npmPublish }}'
+      workingDir: ${{ parameters.filePath }}
+    displayName: 'Run Npm Publish'
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], '${{parameters.defaultBranch}}'))
+- ${{else}}:
+  - task: Npm@1
+    inputs:
+      command: 'custom'
+      customCommand: '${{ parameters.npmPublish }}'
+      workingDir: ${{ parameters.filePath }}
+    displayName: 'Run Npm Publish'
